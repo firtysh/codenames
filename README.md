@@ -1,6 +1,6 @@
-# Codename
+# Codenames
 
-Codename is a mobile application built with React Native CLI that brings the popular board game "Codenames" to your smartphone. Enjoy the game with your friends and family anytime, anywhere.
+Codenames is a mobile application built with React Native CLI that brings the popular board game "Codenames" to your smartphone. Enjoy the game with your friends and family anytime, anywhere.
 
 ## Features
 
@@ -16,13 +16,13 @@ Codename is a mobile application built with React Native CLI that brings the pop
 1. Clone the repository:
 
 ```shell
-git clone https://github.com/firtysh/codename.git
+git clone https://github.com/firtysh/codenames.git
 ```
 
 2. Navigate to the project directory:
 
 ```shell
-cd codename
+cd codenames
 ```
 
 3. Install the dependencies:
@@ -77,13 +77,13 @@ Please ensure you have the necessary development environment and tools set up fo
 
 ## Contributing
 
-Contributions to Codename are welcome! If you find any bugs or have suggestions for new features, please open an issue or submit a pull request. Make sure to follow the project's code style and guidelines.
+Contributions to Codenames are welcome! If you find any bugs or have suggestions for new features, please open an issue or submit a pull request. Make sure to follow the project's code style and guidelines.
 
 ## License
 
-Codename is open source and released under the [MIT License](https://opensource.org/licenses/MIT). Feel free to use, modify, and distribute the code as per the terms of the license.
+Codenames is open source and released under the [MIT License](https://opensource.org/licenses/MIT). Feel free to use, modify, and distribute the code as per the terms of the license.
 
 ## Acknowledgements
 
-- The Codename project is inspired by the board game "Codenames" designed by Vlaada Chvátil.
+- The Codenames project is inspired by the board game "Codenames" designed by Vlaada Chvátil.
 - Thanks to the React Native community and various open source libraries that have made this project possible.
