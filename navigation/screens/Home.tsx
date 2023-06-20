@@ -56,6 +56,30 @@ const Home = (props: {navigation: {navigate: (arg0: string) => void}}) => {
             </LinearGradient>
           </LinearGradient>
         </TouchableHighlight>
+        <LinearGradient
+          colors={['#263409b3', 'transparent']}
+          style={styles.instructionContainer}>
+          <Text style={styles.instructionsHeading}>HOW TO PLAY:</Text>
+          <Text style={styles.instructions}>
+            <Text style={styles.instructionPoints}>1.</Text> Click on the CREATE
+            ROOM button.
+          </Text>
+          <Text style={styles.instructions}>
+            <Text style={styles.instructionPoints}>2.</Text> Select the
+            preferred game settings and start the game.
+          </Text>
+          <Text style={styles.instructions}>
+            <Text style={styles.instructionPoints}>3.</Text> Connect with your
+            friends using your favorite audio or video chat.
+          </Text>
+          <Text style={styles.instructions}>
+            <Text style={styles.instructionPoints}>4.</Text> Share the room URL
+            with your friends.
+          </Text>
+          <Text style={styles.instructions}>
+            <Text style={styles.instructionPoints}>5.</Text> Enjoy the game!
+          </Text>
+        </LinearGradient>
       </View>
     </SafeAreaView>
   );
@@ -69,7 +93,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center', // horizontal
     justifyContent: 'space-evenly', // vertical
-    // justifyContent: 'center', // vertical
     backgroundColor: '#161718',
     padding: 20,
   },
@@ -94,6 +117,25 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#d1cfcccc',
+  },
+  instructionsHeading: {
+    color: '#d46898cc',
+    fontWeight: 'bold',
+    fontSize: 20,
+  },
+  instructionPoints: {
+    color: '#d46898cc',
+    fontWeight: 'bold',
+    fontSize: 18,
+  },
+  instructions: {
+    color: '#d1cfcccc',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  instructionContainer: {
+    padding: 20,
+    borderRadius: 10,
   },
   btn: {
     backgroundColor: '#fee400',

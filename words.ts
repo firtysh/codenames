@@ -1,0 +1,9 @@
+export default {
+    wordset1: [
+        'CENTURY', 'CONNECTOR', 'TAJ MAHAL', 'ALCHEMIST', 'UNITED NATIONS',
+        'CHURCHILL', 'PET', 'SABOTAGE', 'LOSS', 'CREDITS',
+        'BANK', 'BANKRUPT', 'BANKRUPTCY', 'BANKER', 'BANKING',
+        'BANKNOTE', 'BANKROLL', 'BANKRUPTCY', 'BANKER', 'BANKING',
+        'BANKNOTE', 'BANKROLL', 'BANKRUPTCY', 'BANKER', 'BANKING',
+    ]
+};
