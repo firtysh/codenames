@@ -1,5 +1,5 @@
 import React from 'react'
-import { SafeAreaView, View, Text, StyleSheet, FlatList, ImageBackground } from 'react-native'
+import { SafeAreaView, View, Text, StyleSheet, FlatList, ImageBackground, TouchableHighlight } from 'react-native'
 import words from '../../words'
 
 // black : bottom -200 #212121
@@ -36,7 +36,7 @@ const colors = [
     { id: 25, color: 'red', },
 
 ]
-const card = ({ item, index }: any) => {
+const card = ({ item, index }: { item: string, index: number }) => {
     const getCardColor = (index: number) => {
         if (colors[index].color === 'black') {
             return { bottom: -200 }
@@ -78,27 +78,60 @@ const card = ({ item, index }: any) => {
     const textColor = getTextColors(index);
     return (
         <View style={[styles.card, cardBgColor]}>
-            <ImageBackground source={{ uri: 'https://cdn.codenames.game/v20210210/theme/classic/card/fronts.png' }} resizeMode='cover' imageStyle={[styles.imageStyle, cardColor]} style={styles.image}>
-                <Text style={[styles.text, textColor]}>
-                    {item}
-                </Text>
-            </ImageBackground>
-        </View>)
+            <TouchableHighlight onPress={() => { }} style={[{ flex: 1 }, cardBgColor]}>
+                <ImageBackground source={{ uri: 'https://cdn.codenames.game/v20210210/theme/classic/card/fronts.png' }} resizeMode='cover' imageStyle={[styles.imageStyle, cardColor]} style={styles.image}>
+                    <Text style={[styles.cardText, textColor]}>
+                        {item}
+                    </Text>
+                </ImageBackground>
+            </TouchableHighlight>
+        </View>
+    )
 }
 
 const Game = (props: { navigation: { navigate: (arg0: string) => void } }) => {
     const rc = 5;
     return (
         <SafeAreaView style={styles.safe}>
-            {/* <View> */}
-            <Text style={styles.heading}>Game</Text>
-            <View style={styles.container}>
+            <View style={styles.controlContainer}>
+                <View style={{ flexDirection: 'row', gap: 10 }}>
+                    <TouchableHighlight onPress={() => { }}>
+                        <Text style={styles.controlText}>Players</Text>
+                    </TouchableHighlight>
+                    <TouchableHighlight onPress={() => { }}>
+                        <Text style={styles.controlText}>Timer</Text>
+                    </TouchableHighlight>
+                </View>
+                <View style={{ flexDirection: 'row', gap: 10 }}>
+                    <TouchableHighlight onPress={() => { }}>
+                        <Text style={styles.controlText}>Reset</Text>
+                    </TouchableHighlight>
+                    <TouchableHighlight onPress={() => { }}>
+                        <Text style={styles.controlText}>Rules</Text>
+                    </TouchableHighlight>
+                    <TouchableHighlight onPress={() => { }}>
+                        <Text style={styles.controlText}>Profie</Text>
+                    </TouchableHighlight>
+                </View>
+            </View>
+            <View style={styles.cardContainer}>
                 <FlatList
                     data={words.wordset1}
                     renderItem={card}
                     numColumns={rc}
                     keyExtractor={(item, index) => index.toString()}
                 />
+            </View>
+            <View style={styles.footerContainer}>
+                <View style={styles.redContainer}>
+                    <Text style={styles.scoreText}>Words left : 9</Text>
+                </View>
+                <View style={styles.logContainer}>
+                <Text>Log</Text>
+                </View>
+                <View style={styles.blueContainer}>
+                <Text style={styles.scoreText}>Words left : 8</Text>
+                </View>
             </View>
             {/* </View> */}
         </SafeAreaView>
@@ -110,9 +143,15 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#161718',
     },
-    container: {
+    cardContainer: {
         flex: 1,
         padding: 3,
+    },
+    controlContainer: {
+        marginVertical: 20,
+        padding: 5,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
     card: {
         flex: 1,
@@ -128,7 +167,14 @@ const styles = StyleSheet.create({
         position: 'absolute',
         justifyContent: 'center',
     },
-    text: {
+    controlText: {
+        backgroundColor: '#ffe400',
+        fontSize: 15,
+        padding: 5,
+        borderRadius: 5,
+        color: 'black',
+    },
+    cardText: {
         width: '78%',
         height: 'auto',
         position: 'absolute',
@@ -137,12 +183,29 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         bottom: 8,
         fontWeight: 'bold',
-
+    }
+    ,
+    footerContainer:{
+        flexDirection: 'row',
+        flex:1
     },
-    heading: {
-        fontSize: 30,
+    scoreText: {
+        fontSize: 20,
         fontWeight: 'bold',
-        color: 'grey',
+        textAlign: 'center',
+        color: 'white',
+    },
+    redContainer: {
+        flex: 1,
+        backgroundColor: '#8f2b1c',
+    },
+    blueContainer: {
+        flex: 1,
+        backgroundColor: '#3284a3',
+    },
+    logContainer: {
+        flex: 1,
+        backgroundColor: '#212121',
     },
 })
 
