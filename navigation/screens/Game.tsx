@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { SafeAreaView, View, Text, StyleSheet, FlatList, ImageBackground, TouchableHighlight } from 'react-native'
 import words from '../../words'
 
@@ -6,7 +6,16 @@ import words from '../../words'
 // blue : bottom -100 #3a8aa6
 // red : top -100 #d35a2b
 // yellow : top 0 #eed5b2
-
+const players = {
+    blue: {
+        operatives: ['beelzebub', 'lilith'],
+        spymaster: ['lucifer']
+    },
+    red: {
+        operatives: ['michael', 'azazel'],
+        spymaster: ['god']
+    }
+}
 
 const colors = [
     { id: 1, color: 'yellow' },
@@ -36,8 +45,11 @@ const colors = [
     { id: 25, color: 'red', },
 
 ]
-const card = ({ item, index }: { item: string, index: number }) => {
+const card = ({ item, index }: { item: string, index: number }, role: string) => {
     const getCardColor = (index: number) => {
+        if (role != 'spymaster') {
+            return { top: 0 }
+        }
         if (colors[index].color === 'black') {
             return { bottom: -200 }
         }
@@ -52,6 +64,9 @@ const card = ({ item, index }: { item: string, index: number }) => {
         }
     }
     const getTextColors = (index: number) => {
+        if (role != 'spymaster') {
+            return { color: 'black' }
+        }
         if (colors[index].color === 'black') {
             return { color: 'white' }
         }
@@ -60,6 +75,9 @@ const card = ({ item, index }: { item: string, index: number }) => {
         }
     }
     const getCardBgColor = (index: number) => {
+        if (role != 'spymaster') {
+            return { backgroundColor: '#eed5b2' }
+        }
         if (colors[index].color === 'black') {
             return { backgroundColor: '#212121' }
         }
@@ -90,6 +108,7 @@ const card = ({ item, index }: { item: string, index: number }) => {
 }
 
 const Game = (props: { navigation: { navigate: (arg0: string) => void } }) => {
+    const [role, setRole] = useState('')
     const rc = 5;
     return (
         <SafeAreaView style={styles.safe}>
@@ -114,26 +133,51 @@ const Game = (props: { navigation: { navigate: (arg0: string) => void } }) => {
                     </TouchableHighlight>
                 </View>
             </View>
+            <View style={styles.statusContainer}>
+                <Text style={styles.statusText}>The Opponent Spymaster is playin wait for your turn...</Text>
+            </View>
             <View style={styles.cardContainer}>
                 <FlatList
                     data={words.wordset1}
-                    renderItem={card}
+                    renderItem={(item => card(item, role))}
                     numColumns={rc}
                     keyExtractor={(item, index) => index.toString()}
                 />
             </View>
+            <View style={styles.hintContainer}>
+                <Text style={styles.hintText}>...</Text>
+                <Text style={styles.hintText}>_</Text>
+            </View>
             <View style={styles.footerContainer}>
                 <View style={styles.redContainer}>
-                    <Text style={styles.scoreText}>Words left : 9</Text>
+                    <Text style={styles.scoreHeading}>Words left : 9</Text>
+                    <Text style={[styles.scoreText, { color: '#e65831' }]}>Operative(s)</Text>
+                    <View style={styles.roleContainer}>
+                        {players.red.operatives.map((i,index) =>
+                            <Text key={index} style={[styles.textChip, { borderColor: '#e65831', color: '#e65831' }]}>{i}</Text>
+                        )}
+                    </View>
+                    <Text style={[styles.scoreText, { color: '#e65831' }]}>Spymaster</Text>
+                    <View style={styles.roleContainer}>
+                        {players.red.spymaster.map((i,index)=><Text key={index} style={[styles.textChip, { borderColor: '#e65831' }]}>{i}</Text>)}
+                    </View>
                 </View>
                 <View style={styles.logContainer}>
-                <Text>Log</Text>
+                    <Text style={styles.scoreHeading}>Game Log</Text>
                 </View>
                 <View style={styles.blueContainer}>
-                <Text style={styles.scoreText}>Words left : 8</Text>
+                    <Text style={styles.scoreHeading}>Words left : 8</Text>
+                    <Text style={[styles.scoreText, { color: '#7bcae9' }]}>Operative(s)</Text>
+                    <View style={styles.roleContainer}>
+                        {players.blue.operatives.map((i,index)=><Text key={index} style={[styles.textChip, { borderColor: '#7bcae9', color: '#7bcae9' }]}>{i}</Text>)}
+                    </View>
+                    <Text style={[styles.scoreText, { color: '#7bcae9' }]}>Spymaster</Text>
+                    <View style={styles.roleContainer}>
+                        {players.blue.spymaster.map((i,index)=><Text key={index} style={[styles.textChip, { borderColor: '#7bcae9' }]}>{i}</Text>)}
+                        
+                    </View>
                 </View>
             </View>
-            {/* </View> */}
         </SafeAreaView>
     )
 }
@@ -143,15 +187,30 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#161718',
     },
-    cardContainer: {
-        flex: 1,
-        padding: 3,
-    },
+
     controlContainer: {
-        marginVertical: 20,
+        marginTop: 20,
         padding: 5,
         flexDirection: 'row',
         justifyContent: 'space-between',
+    },
+    statusContainer:{
+        // width:80,
+        flexDirection:'row',
+        justifyContent:'center',
+        alignItems:'center',
+    },
+    statusText:{
+        backgroundColor:'white',
+        fontSize:15,
+        fontWeight:'bold',
+        padding:7,
+        borderRadius:7,
+        width:'80%',
+        marginVertical:10
+    },
+    cardContainer: {
+        padding: 3,
     },
     card: {
         flex: 1,
@@ -183,29 +242,65 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         bottom: 8,
         fontWeight: 'bold',
-    }
-    ,
-    footerContainer:{
-        flexDirection: 'row',
-        flex:1
     },
-    scoreText: {
+    hintContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 7,
+    },
+    hintText: {
+        marginVertical: 10,
+        backgroundColor: 'white',
+        color: 'black',
+        padding: 7,
+        fontSize: 20,
+        fontWeight: 'bold',
+        borderRadius: 7
+    },
+    footerContainer: {
+        flexDirection: 'row',
+        flex: 1
+    },
+    scoreHeading: {
         fontSize: 20,
         fontWeight: 'bold',
         textAlign: 'center',
         color: 'white',
     },
+    scoreText: {
+        fontSize: 15,
+        fontWeight: 'bold'
+    },
+    textChip: {
+        borderWidth: 1,
+        borderRadius: 7,
+        padding: 5,
+        textAlign: 'center',
+        color: 'white'
+    },
+    roleContainer: {
+        flexDirection: 'row', 
+        padding: 5, 
+        gap: 4, 
+        flexWrap: 'wrap',
+    },
     redContainer: {
+        borderTopLeftRadius:7,
         flex: 1,
         backgroundColor: '#8f2b1c',
+        padding: 5,
     },
     blueContainer: {
+        borderTopRightRadius:7,
         flex: 1,
         backgroundColor: '#3284a3',
+        padding: 5,
     },
     logContainer: {
         flex: 1,
         backgroundColor: '#212121',
+        padding: 5,
     },
 })
 
