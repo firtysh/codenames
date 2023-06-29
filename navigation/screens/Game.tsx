@@ -1,22 +1,34 @@
 import React, { useState } from 'react'
 import { SafeAreaView, View, Text, StyleSheet, FlatList, ImageBackground, TouchableHighlight } from 'react-native'
+import { useRoute } from '@react-navigation/native'
 import words from '../../words'
+import { RouteProp } from '@react-navigation/native'
 
 // black : bottom -200 #212121
 // blue : bottom -100 #3a8aa6
 // red : top -100 #d35a2b
 // yellow : top 0 #eed5b2
-const players = {
-    blue: {
-        operatives: ['beelzebub', 'lilith'],
-        spymaster: ['lucifer']
-    },
-    red: {
-        operatives: ['michael', 'azazel'],
-        spymaster: ['god']
-    }
-}
-
+// const player:{
+//     blue: {
+//         operative: string[],
+//         spymaster: string[]
+//     },
+//     red: {
+//         operative: string[],
+//         spymaster: string[]
+//     }
+// } = {
+//     blue: {
+//         operative: [],
+//         spymaster: []
+//     },
+//     red: {
+//         operative: [],
+//         spymaster: []
+//     }
+// }
+const teams: { red: 'red', blue: 'blue' } = { red: 'red', blue: 'blue' };
+const roles: { operative: 'operative', spymaster: 'spymaster' } = { operative: 'operative', spymaster: 'spymaster' };
 const colors = [
     { id: 1, color: 'yellow' },
     { id: 2, color: 'blue' },
@@ -108,8 +120,44 @@ const card = ({ item, index }: { item: string, index: number }, role: string) =>
 }
 
 const Game = (props: { navigation: { navigate: (arg0: string) => void } }) => {
+    const route = useRoute<RouteProp<{ params: { nickname: string } }>>()
+    const nickname = route.params.nickname;
     const [role, setRole] = useState('')
+    const [team, setTeam] = useState('')
+    const [players, setPlayers] = useState<{
+        blue: {
+            operative: string[],
+            spymaster: string[]
+        },
+        red: {
+            operative: string[],
+            spymaster: string[]
+        }
+    }>({
+        blue: {
+            operative: [],
+            spymaster: []
+        },
+        red: {
+            operative: [],
+            spymaster: []
+        }
+    })
     const rc = 5;
+
+
+    const handleJoin = (role: 'spymaster' | 'operative', team: 'red' | 'blue') => {
+        setRole(role);
+        setTeam(team);
+        setPlayers(prev => ({
+            ...prev,
+            [team]: {
+                ...prev[team],
+                [role]: [...prev[team][role], nickname]
+            }
+        }))
+    }
+
     return (
         <SafeAreaView style={styles.safe}>
             <View style={styles.controlContainer}>
@@ -153,13 +201,19 @@ const Game = (props: { navigation: { navigate: (arg0: string) => void } }) => {
                     <Text style={styles.scoreHeading}>Words left : 9</Text>
                     <Text style={[styles.scoreText, { color: '#e65831' }]}>Operative(s)</Text>
                     <View style={styles.roleContainer}>
-                        {players.red.operatives.map((i,index) =>
-                            <Text key={index} style={[styles.textChip, { borderColor: '#e65831', color: '#e65831' }]}>{i}</Text>
-                        )}
+                        {/* Red operative */}
+                        {players.red.operative.map((i, index) => <Text key={index} style={[styles.textChip, { borderColor: '#e65831', color: '#e65831' }]}>{i}</Text>)}
+                        {role == '' && <TouchableHighlight onPress={() => {
+                            handleJoin(roles.operative, teams.red)
+                        }}><Text style={[styles.textChip, { borderColor: '#fff', color: '#fff' }]}>Join</Text></TouchableHighlight>}
                     </View>
                     <Text style={[styles.scoreText, { color: '#e65831' }]}>Spymaster</Text>
                     <View style={styles.roleContainer}>
-                        {players.red.spymaster.map((i,index)=><Text key={index} style={[styles.textChip, { borderColor: '#e65831' }]}>{i}</Text>)}
+                        {/* Red Spymaster */}
+                        {players.red.spymaster.map((i, index) => <Text key={index} style={[styles.textChip, { borderColor: '#e65831' }]}>{i}</Text>)}
+                        {role == '' && <TouchableHighlight onPress={() => {
+                            handleJoin(roles.spymaster, teams.red)
+                        }}><Text style={[styles.textChip, { borderColor: '#fff', color: '#fff' }]}>Join</Text></TouchableHighlight>}
                     </View>
                 </View>
                 <View style={styles.logContainer}>
@@ -169,12 +223,20 @@ const Game = (props: { navigation: { navigate: (arg0: string) => void } }) => {
                     <Text style={styles.scoreHeading}>Words left : 8</Text>
                     <Text style={[styles.scoreText, { color: '#7bcae9' }]}>Operative(s)</Text>
                     <View style={styles.roleContainer}>
-                        {players.blue.operatives.map((i,index)=><Text key={index} style={[styles.textChip, { borderColor: '#7bcae9', color: '#7bcae9' }]}>{i}</Text>)}
+                        {/* Blue operative */}
+                        {players.blue.operative.map((i, index) => <Text key={index} style={[styles.textChip, { borderColor: '#7bcae9', color: '#7bcae9' }]}>{i}</Text>)}
+                        {role == '' && team == '' && <TouchableHighlight onPress={() => {
+                            handleJoin(roles.operative, teams.blue)
+                        }}><Text style={[styles.textChip, { borderColor: '#fff', color: 'white' }]}>Join</Text></TouchableHighlight>}
                     </View>
                     <Text style={[styles.scoreText, { color: '#7bcae9' }]}>Spymaster</Text>
                     <View style={styles.roleContainer}>
-                        {players.blue.spymaster.map((i,index)=><Text key={index} style={[styles.textChip, { borderColor: '#7bcae9' }]}>{i}</Text>)}
-                        
+                        {/* Blue Spymasters */}
+                        {players.blue.spymaster.map((i, index) => <Text key={index} style={[styles.textChip, { borderColor: '#7bcae9' }]}>{i}</Text>)}
+                        {role == '' && <TouchableHighlight onPress={() => {
+                            handleJoin(roles.spymaster, teams.blue)
+                        }}><Text style={[styles.textChip, { borderColor: 'white', color: 'white' }]}>Join</Text></TouchableHighlight>}
+
                     </View>
                 </View>
             </View>
@@ -194,20 +256,20 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
-    statusContainer:{
+    statusContainer: {
         // width:80,
-        flexDirection:'row',
-        justifyContent:'center',
-        alignItems:'center',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
-    statusText:{
-        backgroundColor:'white',
-        fontSize:15,
-        fontWeight:'bold',
-        padding:7,
-        borderRadius:7,
-        width:'80%',
-        marginVertical:10
+    statusText: {
+        backgroundColor: 'white',
+        fontSize: 15,
+        fontWeight: 'bold',
+        padding: 7,
+        borderRadius: 7,
+        width: '80%',
+        marginVertical: 10
     },
     cardContainer: {
         padding: 3,
@@ -280,19 +342,19 @@ const styles = StyleSheet.create({
         color: 'white'
     },
     roleContainer: {
-        flexDirection: 'row', 
-        padding: 5, 
-        gap: 4, 
+        flexDirection: 'row',
+        padding: 5,
+        gap: 4,
         flexWrap: 'wrap',
     },
     redContainer: {
-        borderTopLeftRadius:7,
+        borderTopLeftRadius: 7,
         flex: 1,
         backgroundColor: '#8f2b1c',
         padding: 5,
     },
     blueContainer: {
-        borderTopRightRadius:7,
+        borderTopRightRadius: 7,
         flex: 1,
         backgroundColor: '#3284a3',
         padding: 5,

@@ -43,7 +43,11 @@ export default function Room(props: {navigation: {navigate: (arg0: string,arg1:a
           />
           <TouchableHighlight
             onPress={() => {
-              props.navigation.navigate('Game', { nicknme: nickname });
+              if(nickname==''){
+                console.warn("Cant be empty");
+                return;
+              }
+              props.navigation.navigate('Game', { nickname: nickname });
             }}>
             <LinearGradient
               style={styles.btnBorder}
