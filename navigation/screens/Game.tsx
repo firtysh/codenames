@@ -1,117 +1,132 @@
-import React, { useState } from 'react'
-import { SafeAreaView, View, Text, StyleSheet, FlatList, ImageBackground, TouchableHighlight } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import {
+    SafeAreaView,
+    View,
+    Text,
+    StyleSheet,
+    FlatList,
+    ImageBackground,
+    TouchableHighlight,
+    TextInput,
+    Button
+} from 'react-native'
 import { useRoute } from '@react-navigation/native'
-import words from '../../words'
-import { RouteProp } from '@react-navigation/native'
+import words from '../../words'  // words used for game
+import { RouteProp } from '@react-navigation/native'   // to get room name from Room.tsx
+
+
+
 
 // black : bottom -200 #212121
 // blue : bottom -100 #3a8aa6
 // red : top -100 #d35a2b
 // yellow : top 0 #eed5b2
-// const player:{
-//     blue: {
-//         operative: string[],
-//         spymaster: string[]
-//     },
-//     red: {
-//         operative: string[],
-//         spymaster: string[]
-//     }
-// } = {
-//     blue: {
-//         operative: [],
-//         spymaster: []
-//     },
-//     red: {
-//         operative: [],
-//         spymaster: []
-//     }
-// }
+
+// Constants for teams and roles and colors
 const teams: { red: 'red', blue: 'blue' } = { red: 'red', blue: 'blue' };
 const roles: { operative: 'operative', spymaster: 'spymaster' } = { operative: 'operative', spymaster: 'spymaster' };
-const colors = [
-    { id: 1, color: 'yellow' },
-    { id: 2, color: 'blue' },
-    { id: 3, color: 'black', },
-    { id: 4, color: 'red', },
-    { id: 5, color: 'blue' },
-    { id: 6, color: 'blue', },
-    { id: 7, color: 'red', },
-    { id: 8, color: 'red', },
-    { id: 9, color: 'blue', },
-    { id: 10, color: 'red', },
-    { id: 11, color: 'blue', },
-    { id: 12, color: 'red', },
-    { id: 13, color: 'blue', },
-    { id: 14, color: 'red', },
-    { id: 15, color: 'blue', },
-    { id: 16, color: 'red', },
-    { id: 17, color: 'yellow', },
-    { id: 18, color: 'blue', },
-    { id: 19, color: 'blue', },
-    { id: 20, color: 'yellow', },
-    { id: 21, color: 'yellow', },
-    { id: 22, color: 'yellow', },
-    { id: 23, color: 'yellow', },
-    { id: 24, color: 'yellow', },
-    { id: 25, color: 'red', },
+const initialColors = [
+    { id: 1, color: 'yellow', isOpen: true },
+    { id: 2, color: 'blue', isOpen: true },
+    { id: 3, color: 'black', isOpen: false },
+    { id: 4, color: 'red', isOpen: false },
+    { id: 5, color: 'blue', isOpen: false },
+    { id: 6, color: 'blue', isOpen: false },
+    { id: 7, color: 'red', isOpen: false },
+    { id: 8, color: 'red', isOpen: false },
+    { id: 9, color: 'blue', isOpen: false },
+    { id: 10, color: 'red', isOpen: false },
+    { id: 11, color: 'blue', isOpen: false },
+    { id: 12, color: 'red', isOpen: false },
+    { id: 13, color: 'blue', isOpen: false },
+    { id: 14, color: 'red', isOpen: false },
+    { id: 15, color: 'blue', isOpen: false },
+    { id: 16, color: 'red', isOpen: false },
+    { id: 17, color: 'yellow', isOpen: false },
+    { id: 18, color: 'blue', isOpen: false },
+    { id: 19, color: 'blue', isOpen: false },
+    { id: 20, color: 'yellow', isOpen: false },
+    { id: 21, color: 'yellow', isOpen: false },
+    { id: 22, color: 'yellow', isOpen: false },
+    { id: 23, color: 'yellow', isOpen: false },
+    { id: 24, color: 'yellow', isOpen: false },
+    { id: 25, color: 'red', isOpen: false },
 
 ]
-const card = ({ item, index }: { item: string, index: number }, role: string) => {
-    const getCardColor = (index: number) => {
-        if (role != 'spymaster') {
+
+
+const generateRandomisedCard = () => {
+    let randomWords = [...words.wordset1].sort(() => Math.random() - 0.5)
+    let randomColors = [...initialColors].sort(() => Math.random() - 0.5)
+    let cards = []
+    for (let i = 0; i < 25; i++) {
+        cards.push({ word: randomWords[i], color: randomColors[i].color, isOpen: randomColors[i].isOpen })
+    }
+    console.log(cards, '\n ended');
+    return cards;
+}
+
+
+// card component with color 
+const card = ({ item }: { item: { word: string, color: string, isOpen: boolean } }, role: string) => {
+    // const [colors, setColors] = useState(initialColors)
+    const colors = initialColors;
+
+
+    const getCardColor = () => {
+        if (role != 'spymaster' && !item.isOpen) {
             return { top: 0 }
         }
-        if (colors[index].color === 'black') {
+        if (item.color === 'black') {
             return { bottom: -200 }
         }
-        else if (colors[index].color === 'blue') {
+        else if (item.color === 'blue') {
             return { bottom: -100 }
         }
-        else if (colors[index].color === 'red') {
+        else if (item.color === 'red') {
             return { top: -200 }
         }
         else {
             return { top: 0 }
         }
     }
-    const getTextColors = (index: number) => {
-        if (role != 'spymaster') {
+    const getTextColors = () => {
+        if (role != 'spymaster' && !item.isOpen) {
             return { color: 'black' }
         }
-        if (colors[index].color === 'black') {
+        if (item.color === 'black') {
             return { color: 'white' }
         }
         else {
             return { color: 'black' }
         }
     }
-    const getCardBgColor = (index: number) => {
-        if (role != 'spymaster') {
+    const getCardBgColor = () => {
+        if (role != 'spymaster' && !item.isOpen) {
             return { backgroundColor: '#eed5b2' }
         }
-        if (colors[index].color === 'black') {
+        if (item.color === 'black') {
             return { backgroundColor: '#212121' }
         }
-        else if (colors[index].color === 'blue') {
+        else if (item.color === 'blue') {
             return { backgroundColor: '#3a8aa6' }
         }
-        else if (colors[index].color === 'red') {
+        else if (item.color === 'red') {
             return { backgroundColor: '#d35a2b' }
         }
         else {
             return { backgroundColor: '#eed5b2' }
         }
     }
-    const cardBgColor = getCardBgColor(index);
-    const cardColor = getCardColor(index);
-    const textColor = getTextColors(index);
+    const cardBgColor = getCardBgColor();
+    const cardColor = getCardColor();
+    const textColor = getTextColors();
     return (
         <View style={[styles.card, cardBgColor]}>
             <TouchableHighlight onPress={() => { }} style={[{ flex: 1 }, cardBgColor]}>
                 <ImageBackground source={{ uri: 'https://cdn.codenames.game/v20210210/theme/classic/card/fronts.png' }} resizeMode='cover' imageStyle={[styles.imageStyle, cardColor]} style={styles.image}>
                     <Text style={[styles.cardText, textColor]}>
-                        {item}
+                        {item.word}
                     </Text>
                 </ImageBackground>
             </TouchableHighlight>
@@ -119,11 +134,22 @@ const card = ({ item, index }: { item: string, index: number }, role: string) =>
     )
 }
 
+
+// main game component
 const Game = (props: { navigation: { navigate: (arg0: string) => void } }) => {
     const route = useRoute<RouteProp<{ params: { nickname: string } }>>()
     const nickname = route.params.nickname;
+
+    // generateRandomisedCard()
+
+    // defining required states
+    const [turn, setTurn] = useState(teams.red)
+    const [statusText, setStatusText] = useState('Status goes here')
+    const [hintText, setHintText] = useState('...');
+    const [hintCount, setHintCount] = useState('_')
     const [role, setRole] = useState('')
     const [team, setTeam] = useState('')
+    const [cards, setCards] = useState([{ word: '', color: '', isOpen: false }])
     const [players, setPlayers] = useState<{
         blue: {
             operative: string[],
@@ -143,10 +169,19 @@ const Game = (props: { navigation: { navigate: (arg0: string) => void } }) => {
             spymaster: []
         }
     })
-    const rc = 5;
 
 
-    const handleJoin = (role: 'spymaster' | 'operative', team: 'red' | 'blue') => {
+    useEffect(() => {
+        setCards(generateRandomisedCard())
+    }, [])
+
+
+
+    // constants
+    const rc = 5; // row coloumn
+
+    // handlers 
+    const handleJoin = (role: 'spymaster' | 'operative', team: 'red' | 'blue') => { // handles when player clicks on join button
         setRole(role);
         setTeam(team);
         setPlayers(prev => ({
@@ -160,6 +195,8 @@ const Game = (props: { navigation: { navigate: (arg0: string) => void } }) => {
 
     return (
         <SafeAreaView style={styles.safe}>
+
+            {/* Game controls like profile reset timer etc */}
             <View style={styles.controlContainer}>
                 <View style={{ flexDirection: 'row', gap: 10 }}>
                     <TouchableHighlight onPress={() => { }}>
@@ -181,21 +218,40 @@ const Game = (props: { navigation: { navigate: (arg0: string) => void } }) => {
                     </TouchableHighlight>
                 </View>
             </View>
+
+            {/*  Show the current status of the game like whos turn */}
             <View style={styles.statusContainer}>
-                <Text style={styles.statusText}>The Opponent Spymaster is playin wait for your turn...</Text>
+                <Text style={styles.statusText}>{statusText}</Text>
             </View>
+
+
+            {/*  Crads are rendered here */}
             <View style={styles.cardContainer}>
                 <FlatList
-                    data={words.wordset1}
+                    data={cards}
                     renderItem={(item => card(item, role))}
                     numColumns={rc}
                     keyExtractor={(item, index) => index.toString()}
                 />
             </View>
+
+            {/* Hints */}
             <View style={styles.hintContainer}>
-                <Text style={styles.hintText}>...</Text>
-                <Text style={styles.hintText}>_</Text>
+                {role == roles.spymaster && turn == team ?
+                    <>
+                        <TextInput style={styles.hintText} placeholder='Enter hint' />
+                        <TextInput style={styles.hintText} keyboardType='numeric' placeholder='0' />
+                        <TouchableHighlight onPress={()=>{}}  >
+                            <Text style={styles.hintText}>Send</Text>
+                        </TouchableHighlight>
+                    </>
+                    :
+                    <><Text style={styles.hintText}>{hintText}</Text>
+                        <Text style={styles.hintText}>{hintCount}</Text></>
+                }
             </View>
+
+
             <View style={styles.footerContainer}>
                 <View style={styles.redContainer}>
                     <Text style={styles.scoreHeading}>Words left : 9</Text>
@@ -244,6 +300,9 @@ const Game = (props: { navigation: { navigate: (arg0: string) => void } }) => {
     )
 }
 
+
+
+// Styles 
 const styles = StyleSheet.create({
     safe: {
         flex: 1,
