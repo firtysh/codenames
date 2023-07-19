@@ -16,19 +16,21 @@ import {useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import uuid from 'react-native-uuid';
 import { useDispatch } from 'react-redux';
-import { createRoom} from '../../redux/action.js'
-import {socket, connectSocket} from '../../socket'
+import { createRoom} from '../redux/action.js'
+import {socket, connectSocket} from '../socket'
 
 
 
 
-export default function Room(props: {navigation: {navigate: (arg0: string,arg1:any) => void}}) {
+export default function Room(props: {navigation: {navigate: (arg0: string) => void}}) {
 
-  const handleCreateRoom = (nickname: string) => {
-    const id = uuid.v4().toString();
+  const handleCreateRoom = async (nickname: string) => {
+    let id = await AsyncStorage.getItem('uid')
+    if(!id){
+      id = uuid.v4().toString(); 
+      AsyncStorage.setItem('uid', id);
+    }
     AsyncStorage.setItem('nickname', nickname);
-    AsyncStorage.setItem('uid', id);
-    
     socket.emit('createRoom', {nickname: nickname,uid:id});
   };
 
@@ -44,8 +46,8 @@ export default function Room(props: {navigation: {navigate: (arg0: string,arg1:a
       console.log('connected');
     })
 
-    socket.on('room_created',(args)=>{
-      console.log(args.roomId);
+    socket.on('room_created',({roomId})=>{
+     props.navigation.navigate('Game')
       
     })
 
