@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
-import femaleImg from '../../assets/codename_female.png';
-import maleImg from '../../assets/codename_male.png';
+import { useEffect } from 'react';
+import femaleImg from '../assets/codename_female.png';
+import maleImg from '../assets/codename_male.png';
 import LinearGradient from 'react-native-linear-gradient';
-import {LinearTextGradient} from 'react-native-text-gradient';
+import { LinearTextGradient } from 'react-native-text-gradient';
 import {
   SafeAreaView,
   Text,
@@ -12,58 +12,51 @@ import {
   TouchableHighlight,
   Image,
 } from 'react-native';
-import {useState} from 'react';
+import { useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import uuid from 'react-native-uuid';
-import { useDispatch } from 'react-redux';
-import { createRoom} from '../redux/action.js'
-import {socket, connectSocket} from '../socket'
+
+import { socket, connectSocket } from '../socket'
+import { useSelector } from 'react-redux';
 
 
+export default function Room(props: { navigation: { navigate: (arg0: string) => void }, route: { params: { type: string } } }) {
+  const { type } = props.route.params
+  const auth = useSelector((state: any) => state.auth);
 
-
-export default function Room(props: {navigation: {navigate: (arg0: string) => void}}) {
-
+  console.log(auth);
+  
   const handleCreateRoom = async (nickname: string) => {
-    let id = await AsyncStorage.getItem('uid')
-    if(!id){
-      id = uuid.v4().toString(); 
-      AsyncStorage.setItem('uid', id);
-    }
-    AsyncStorage.setItem('nickname', nickname);
-    socket.emit('createRoom', {nickname: nickname,uid:id});
+
+    socket.emit('createRoom', { nickname: nickname, uid: auth.id});
   };
 
-
-  useEffect(()=>{
-    if(socket && !socket.connected){
+  useEffect(() => {
+    if (socket && !socket.connected) {
       socket.connect();
     }
-    if(!socket){
-      connectSocket('hello')
+    if (!socket) {
+      connectSocket(auth.id)
     }
-    socket.on('connect',()=>{
+    socket.on('connect', () => {
       console.log('connected');
     })
+    socket.on('room_created', ({ roomId }) => {
+      props.navigation.navigate('Game')
 
-    socket.on('room_created',({roomId})=>{
-     props.navigation.navigate('Game')
-      
     })
-
-    socket.on('disconnect',()=>{
+    socket.on('disconnect', () => {
       console.log('Disconnected');
     })
-    
-
-    return ()=>{
+    return () => {
       socket.off('connect');
       socket.off('room_created')
       socket.off('disconnect')
     }
-  },[])
-  const onChangeText = (text: string) => setNickname(text);
+  }, [])
+  const onChangeNickname = (text: string) => setNickname(text);
+  const onChangeRoomID = (text: string) => setRoomID(text);
   const [nickname, setNickname] = useState('');
+  const [roomID, setRoomID] = useState('');
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
@@ -73,8 +66,8 @@ export default function Room(props: {navigation: {navigate: (arg0: string) => vo
             <LinearTextGradient
               locations={[0, 1]}
               colors={['#fee400', '#fa0']}
-              start={{x: 0, y: 0}}
-              end={{x: 0, y: 1}}>
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}>
               <Text style={styles.heading}> Codenames</Text>
             </LinearTextGradient>
           </View>
@@ -82,35 +75,82 @@ export default function Room(props: {navigation: {navigate: (arg0: string) => vo
             <Image source={maleImg} style={styles.image} />
             <Image source={femaleImg} style={styles.image} />
           </View>
-          <Text style={styles.text}>To enter the room, choose a nickname.</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={onChangeText}
-            value={nickname}
-          />
-          <TouchableHighlight
-            onPress={() => {
-              if(nickname==''){
-                console.warn("Cant be empty");
-                return;
-              }
-              handleCreateRoom(nickname);
-              // props.navigation.navigate('Game', { nickname: nickname });
-            }}>
-            <LinearGradient
-              style={styles.btnBorder}
-              colors={['#3b3601', '#fee400', '#a24500']}
-              start={{x: 0, y: 0}}
-              end={{x: 0.5, y: 2}}>
-              <LinearGradient
-                style={styles.btn}
-                colors={['#b7a400', '#b87a00']}
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 1}}>
-                <Text style={styles.btnText}>Create Room</Text>
-              </LinearGradient>
-            </LinearGradient>
-          </TouchableHighlight>
+
+
+          {type === 'create' && (
+            <>
+              <Text style={styles.text}>To enter the room, choose a nickname.</Text>
+              <TextInput
+                style={styles.input}
+                onChangeText={onChangeNickname}
+                value={nickname}
+              />
+              <TouchableHighlight
+                onPress={() => {
+                  if (nickname == '') {
+                    console.warn("Cant be empty");
+                    return;
+                  }
+                  handleCreateRoom(nickname);
+                  // props.navigation.navigate('Game', { nickname: nickname });
+                }}>
+                <LinearGradient
+                  style={styles.btnBorder}
+                  colors={['#3b3601', '#fee400', '#a24500']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 0.5, y: 2 }}>
+                  <LinearGradient
+                    style={styles.btn}
+                    colors={['#b7a400', '#b87a00']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}>
+                    <Text style={styles.btnText}>Create Room</Text>
+                  </LinearGradient>
+                </LinearGradient>
+              </TouchableHighlight>
+            </>
+          )}
+
+          {
+            type === 'join' && (<>
+              <Text style={styles.text}>Enter Room ID</Text>
+              <TextInput
+                style={styles.input}
+                onChangeText={onChangeRoomID}
+                value={roomID}
+              />
+              <Text style={styles.text}>To enter the room, choose a nickname.</Text>
+              <TextInput
+                style={styles.input}
+                onChangeText={onChangeNickname}
+                value={nickname}
+              />
+              <TouchableHighlight
+                onPress={() => {
+                  if (nickname == '') {
+                    console.warn("Cant be empty");
+                    return;
+                  }
+                  handleCreateRoom(nickname);
+                  // props.navigation.navigate('Game', { nickname: nickname });
+                }}>
+
+                <LinearGradient
+                  style={styles.btnBorder}
+                  colors={['#3b3601', '#fee400', '#a24500']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 0.5, y: 2 }}>
+                  <LinearGradient
+                    style={styles.btn}
+                    colors={['#b7a400', '#b87a00']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}>
+                    <Text style={styles.btnText}>Join Room</Text>
+                  </LinearGradient>
+                </LinearGradient>
+              </TouchableHighlight>
+            </>)
+          }
         </View>
       </View>
     </SafeAreaView>

@@ -2,10 +2,19 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const roomSlice = createSlice({
     name:"Room",
-    initialState:{},
+    initialState:[{
+        player:"test",
+        name:"test",
+    }],
     reducers:{
         createRoom : (state, action) => {
-            state = action.payload;
+            state.push(action.payload);
+        },
+        joinRoom : (state, action) => {
+            state.push(action.payload);
+        },
+        leaveRoom : (state, action) => {
+            state=state.filter((room) => room.player !== action.payload.player);
         }
     }
 })

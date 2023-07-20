@@ -36,7 +36,7 @@ const generateCardData = () => {
     for (let i = 0; i < 25; i++) {
         cards.push({ word: randomWords[i], color: randomColors[i].color, isOpen: randomColors[i].isOpen })
     }
-    console.log(cards, '\n ended');
+    // console.log(cards, '\n ended');
     return cards;
 }
 

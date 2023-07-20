@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   SafeAreaView,
   View,
@@ -9,8 +9,23 @@ import {
 } from 'react-native';
 import {LinearTextGradient} from 'react-native-text-gradient';
 import LinearGradient from 'react-native-linear-gradient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import uuid from 'react-native-uuid';
+import { useDispatch } from 'react-redux';
+import { initID } from '../redux/slices/authSlice';
 
-const Home = (props: {navigation: {navigate: (arg0: string) => void}}) => {
+const Home = (props:{ navigation: { navigate: (arg0: string,arg1:any) => void }}) => {
+const dispatch = useDispatch();
+const handleNavigation = async (type:string) => {
+    let id = await AsyncStorage.getItem('uid');
+    if(!id){
+      id = uuid.v4().toString();
+      await AsyncStorage.setItem('uid', id);
+    }
+    dispatch(initID(id));
+    props.navigation.navigate('Room',{type:type});
+  };
+
   return (
     <SafeAreaView style={styles.safe}>
       <StatusBar
@@ -40,7 +55,7 @@ const Home = (props: {navigation: {navigate: (arg0: string) => void}}) => {
         <Text style={styles.desc}>Play With Your Friends</Text>
         <TouchableHighlight
           onPress={() => {
-            props.navigation.navigate('Room');
+            handleNavigation('create');
           }}>
           <LinearGradient
             style={styles.btnBorder}
@@ -53,6 +68,24 @@ const Home = (props: {navigation: {navigate: (arg0: string) => void}}) => {
               start={{x: 0, y: 0}}
               end={{x: 1, y: 1}}>
               <Text style={styles.btnText}>Create Room</Text>
+            </LinearGradient>
+          </LinearGradient>
+        </TouchableHighlight>
+        <TouchableHighlight
+          onPress={() => {
+            handleNavigation('join');
+          }}>
+          <LinearGradient
+            style={styles.btnBorder}
+            colors={['#3b3601', '#fee400', '#a24500']}
+            start={{x: 0, y: 0}}
+            end={{x: 0.5, y: 2}}>
+            <LinearGradient
+              style={styles.btn}
+              colors={['#b7a400', '#b87a00']}
+              start={{x: 0, y: 0}}
+              end={{x: 1, y: 1}}>
+              <Text style={styles.btnText}>Join Room</Text>
             </LinearGradient>
           </LinearGradient>
         </TouchableHighlight>

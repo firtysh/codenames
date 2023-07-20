@@ -1,41 +1,38 @@
-import React, { useState, useEffect } from 'react'
 import { SafeAreaView, View,StyleSheet,FlatList } from 'react-native'
+import Card from '../components/Card'
+import GameControls from '../components/GameControls'
+import GameStatus from '../components/GameStatus'
+import Hint from '../components/Hint'
+import Footer from '../components/Footer'
+import { useSelector } from 'react-redux'
 
 // main game component
 const Game = () => {
 
-
-    const [statusText, setStatusText] = useState('Status goes here')
-
-    const [role, setRole] = useState('')
-    const [team, setTeam] = useState('')
-    const [cards, setCards] = useState([{ word: '', color: '', isOpen: false }])
-
-
-    useEffect(() => {
-        setCards([])
-    }, [])
+    // states
+    const cards = useSelector((state:any)=>state.cards)
+    const auth = useSelector((state:any)=>state.auth)
+   
     // constants
     const rc = 5; // row coloumn
 
-    // handlers 
-
     return (
         <SafeAreaView style={styles.safe}>
-            
+            <GameControls/>
+            <GameStatus/>
             <View style={styles.cardContainer}>
                 <FlatList
                     data={cards}
-                    renderItem={(item => Card(item, role))}
+                    renderItem={(item => Card(item, auth.role))}
                     numColumns={rc}
                     keyExtractor={(item, index) => index.toString()}
                 />
             </View>
+            <Hint/>
+            <Footer/>
         </SafeAreaView>
     )
 }
-
-
 
 // Styles 
 const styles = StyleSheet.create({
@@ -46,10 +43,6 @@ const styles = StyleSheet.create({
     cardContainer: {
         padding: 3,
     },
-
-   
-
-
 })
 
 export default Game
