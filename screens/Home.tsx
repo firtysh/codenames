@@ -25,7 +25,6 @@ const handleNavigation = async (type:string) => {
     dispatch(initID(id));
     props.navigation.navigate('Room',{type:type});
   };
-
   return (
     <SafeAreaView style={styles.safe}>
       <StatusBar

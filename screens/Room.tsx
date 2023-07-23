@@ -3,31 +3,24 @@ import femaleImg from '../assets/codename_female.png';
 import maleImg from '../assets/codename_male.png';
 import LinearGradient from 'react-native-linear-gradient';
 import { LinearTextGradient } from 'react-native-text-gradient';
-import {
-  SafeAreaView,
-  Text,
-  View,
-  StyleSheet,
-  TextInput,
-  TouchableHighlight,
-  Image,
-} from 'react-native';
+import { SafeAreaView, Text, View, StyleSheet, TextInput, TouchableHighlight, Image } from 'react-native';
 import { useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import { socket, connectSocket } from '../socket'
-import { useSelector } from 'react-redux';
-
+import { useSelector,useDispatch } from 'react-redux';
+import { joinRoom } from '../redux/slices/roomSlice';
+import { useRoute } from '@react-navigation/native'
 
 export default function Room(props: { navigation: { navigate: (arg0: string) => void }, route: { params: { type: string } } }) {
+  const route = useRoute();
+  const dispatch = useDispatch();
   const { type } = props.route.params
   const auth = useSelector((state: any) => state.auth);
 
-  console.log(auth);
-  
   const handleCreateRoom = async (nickname: string) => {
-
-    socket.emit('createRoom', { nickname: nickname, uid: auth.id});
+    socket.emit('createRoom', { nickname: nickname });
+  };
+  const handleJoinRoom = async (nickname: string, roomId: string) => {
+    socket.emit('joinRoom', { nickname: nickname, roomId: roomId });
   };
 
   useEffect(() => {
@@ -40,9 +33,19 @@ export default function Room(props: { navigation: { navigate: (arg0: string) => 
     socket.on('connect', () => {
       console.log('connected');
     })
-    socket.on('room_created', ({ roomId }) => {
-      props.navigation.navigate('Game')
+    socket.on('room_created', (roomDetail) => {
+      console.log(roomDetail);
+      dispatch(joinRoom(roomDetail))
 
+      props.navigation.navigate('Config')
+
+    })
+    socket.on('room_joined', (roomDetail) => {
+      dispatch(joinRoom(roomDetail))
+      console.log(roomDetail);
+      if(route.name === 'Room'){
+        props.navigation.navigate('Config')
+      }
     })
     socket.on('disconnect', () => {
       console.log('Disconnected');
@@ -50,13 +53,14 @@ export default function Room(props: { navigation: { navigate: (arg0: string) => 
     return () => {
       socket.off('connect');
       socket.off('room_created')
+      socket.off('room_joined')
       socket.off('disconnect')
     }
   }, [])
   const onChangeNickname = (text: string) => setNickname(text);
-  const onChangeRoomID = (text: string) => setRoomID(text);
+  const onChangeroomId = (text: string) => setroomId(text);
   const [nickname, setNickname] = useState('');
-  const [roomID, setRoomID] = useState('');
+  const [roomId, setroomId] = useState('');
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
@@ -116,8 +120,8 @@ export default function Room(props: { navigation: { navigate: (arg0: string) => 
               <Text style={styles.text}>Enter Room ID</Text>
               <TextInput
                 style={styles.input}
-                onChangeText={onChangeRoomID}
-                value={roomID}
+                onChangeText={onChangeroomId}
+                value={roomId}
               />
               <Text style={styles.text}>To enter the room, choose a nickname.</Text>
               <TextInput
@@ -127,11 +131,11 @@ export default function Room(props: { navigation: { navigate: (arg0: string) => 
               />
               <TouchableHighlight
                 onPress={() => {
-                  if (nickname == '') {
+                  if (nickname == '' || roomId == '') {
                     console.warn("Cant be empty");
                     return;
                   }
-                  handleCreateRoom(nickname);
+                  handleJoinRoom(nickname,roomId);
                   // props.navigation.navigate('Game', { nickname: nickname });
                 }}>
 
