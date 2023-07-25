@@ -4,10 +4,10 @@ import { createSlice } from "@reduxjs/toolkit";
 const playerSlice = createSlice({
     name:"Player",
     initialState:[{
-        name:"test",
-        id:"test",
-        team:"red",
-        role:"spymaster",
+        name:"",
+        id:"",
+        team:"",
+        role:"",
     }],
     reducers:{
         newPlayer : (state, action) => {
