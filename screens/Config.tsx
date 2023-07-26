@@ -39,6 +39,7 @@ function Config(props: { navigation: { navigate: (arg0: string) => void } }) {
 
   const handleStart= ()=>{
     if (players.length=== room.members.length) {
+      socket.emit('start_game')
       props.navigation.navigate('Game')
     }else{
       console.error('Can not start')
@@ -50,6 +51,10 @@ function Config(props: { navigation: { navigate: (arg0: string) => void } }) {
       console.log('config.tsx l45', data);
 
       dispatch(newPlayer(data))
+    })
+    socket.on('game_started', (data) => {
+      console.log('config.tsx l57', data);
+      props.navigation.navigate('Game')
     })
 
     return () => {
