@@ -24,6 +24,6 @@ const authSlice = createSlice({
     }
 })
 
-export const { initID,updateRole,updateTeam } = authSlice.actions;
+export const { initID,updateRole,updateTeam,updateName } = authSlice.actions;
 
 export default authSlice.reducer;

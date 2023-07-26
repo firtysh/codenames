@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { socket, connectSocket } from '../socket'
 import { useSelector,useDispatch } from 'react-redux';
 import { joinRoom } from '../redux/slices/roomSlice';
+import { updateName } from '../redux/slices/authSlice';
 import { useRoute } from '@react-navigation/native'
 
 export default function Room(props: { navigation: { navigate: (arg0: string) => void }, route: { params: { type: string } } }) {
@@ -17,10 +18,12 @@ export default function Room(props: { navigation: { navigate: (arg0: string) => 
   const auth = useSelector((state: any) => state.auth);
 
   const handleCreateRoom = async (nickname: string) => {
-    socket.emit('createRoom', { nickname: nickname });
+    dispatch(updateName(nickname))
+    socket.emit('createRoom', { name: nickname });
   };
   const handleJoinRoom = async (nickname: string, roomId: string) => {
-    socket.emit('joinRoom', { nickname: nickname, roomId: roomId });
+    dispatch(updateName(nickname))
+    socket.emit('joinRoom', { name: nickname, roomId: roomId });
   };
 
   useEffect(() => {
@@ -34,15 +37,13 @@ export default function Room(props: { navigation: { navigate: (arg0: string) => 
       console.log('connected');
     })
     socket.on('room_created', (roomDetail) => {
-      console.log(roomDetail);
+      console.log('Room.tsx L40',roomDetail);
       dispatch(joinRoom(roomDetail))
-
       props.navigation.navigate('Config')
-
     })
     socket.on('room_joined', (roomDetail) => {
       dispatch(joinRoom(roomDetail))
-      console.log(roomDetail);
+      console.log('room.tsx l45',roomDetail);
       if(route.name === 'Room'){
         props.navigation.navigate('Config')
       }

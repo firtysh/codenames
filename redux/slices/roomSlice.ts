@@ -1,20 +1,27 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initial:any = {}
+
 
 const roomSlice = createSlice({
     name:"Room",
-    initialState:initial,
+    initialState: {
+        roomId:'',
+        members:[{
+            id:"",
+            name:"",
+            owner:false,
+        }]
+    },
     reducers:{
         joinRoom : (_, action) => {
             return action.payload;
         },
         leaveRoom : (state, action) => {
-            state=state.members.filter((room:any) => room.player !== action.payload.player);
+            return state;
         }
     }
 })
 
-export const {joinRoom} = roomSlice.actions;
+export const {joinRoom,leaveRoom} = roomSlice.actions;
 
 export default roomSlice.reducer;

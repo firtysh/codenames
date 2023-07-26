@@ -1,17 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+type Player = {
+    name : string,
+    id: string,
+    team:string,
+    role:string
+}
+
+const initial : Player[] =[]
 
 const playerSlice = createSlice({
     name:"Player",
-    initialState:[{
-        name:"",
-        id:"",
-        team:"",
-        role:"",
-    }],
+    initialState: initial,
     reducers:{
         newPlayer : (state, action) => {
-            state.push(action.payload);
+            return action.payload
         }
     }
 
