@@ -1,18 +1,17 @@
 import { View, Text, TextInput, TouchableHighlight, StyleSheet } from 'react-native'
-import { useState } from 'react'
+import { useSelector } from 'react-redux'
+import { RootState } from '../redux/store'
 
 function Hint() {
-    const teams: { red: 'red', blue: 'blue' } = { red: 'red', blue: 'blue' };
-    const roles: { operative: 'operative', spymaster: 'spymaster' } = { operative: 'operative', spymaster: 'spymaster' };
+    const auth = useSelector((state: RootState) => state.auth)
+    const teamData = useSelector((state: RootState) => state.teamData)
 
-    const [team, setTeam] = useState('')
-    const [role, setRole] = useState('')
-    const [hintText, setHintText] = useState('...');
-    const [hintCount, setHintCount] = useState('_');
-    const [turn, setTurn] = useState(teams.red)
+    const hintText = teamData[teamData.turn].hint
+    const hintCount = teamData[teamData.turn].hintCount
+
     return (
         <View style={styles.hintContainer}>
-            {role == roles.spymaster && turn == team ?
+            {auth.role==='spymaster' && teamData.turn===auth.team ?
                 <>
                     <TextInput style={styles.hintText} placeholder='Enter hint' />
                     <TextInput style={styles.hintText} keyboardType='numeric' placeholder='0' />
@@ -21,8 +20,10 @@ function Hint() {
                     </TouchableHighlight>
                 </>
                 :
-                <><Text style={styles.hintText}>{hintText}</Text>
-                    <Text style={styles.hintText}>{hintCount}</Text></>
+                <>
+                <Text style={styles.hintText}>{hintText}</Text>
+                <Text style={styles.hintText}>{hintCount}</Text>
+                </>
             }
         </View>
     )

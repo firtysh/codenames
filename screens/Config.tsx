@@ -5,6 +5,8 @@ import { RootState } from "../redux/store"
 import { newPlayer } from "../redux/slices/playerSlice"
 import { updateRole, updateTeam } from "../redux/slices/authSlice"
 import { socket } from "../socket"
+import { setCards } from "../redux/slices/cardsSlice"
+import { setTeamData } from "../redux/slices/teamDataSlice"
 
 function Config(props: { navigation: { navigate: (arg0: string) => void } }) {
   const dispatch = useDispatch();
@@ -40,7 +42,6 @@ function Config(props: { navigation: { navigate: (arg0: string) => void } }) {
   const handleStart= ()=>{
     if (players.length=== room.members.length) {
       socket.emit('start_game')
-      props.navigation.navigate('Game')
     }else{
       console.error('Can not start')
     }
@@ -49,11 +50,13 @@ function Config(props: { navigation: { navigate: (arg0: string) => void } }) {
   useEffect(() => {
     socket.on('joined_team', (data) => {
       console.log('config.tsx l45', data);
-
       dispatch(newPlayer(data))
     })
     socket.on('game_started', (data) => {
-      console.log('config.tsx l57', data);
+      console.log('config.tsx l55', data.cardData);
+      console.log('config.tsx l56', data.teamData);
+      dispatch(setTeamData(data.teamData))
+      dispatch(setCards(data.cardData))
       props.navigation.navigate('Game')
     })
 

@@ -3,6 +3,11 @@ import { useSelector } from 'react-redux'
 import { RootState } from '../redux/store'
 function Footer() {
     const players = useSelector((state: RootState) => state.player)
+    const teamData = useSelector((state: RootState) => state.teamData)
+
+    const redWords = teamData.red.wordsLeft;
+    const blueWords = teamData.blue.wordsLeft;
+
     const redSpymasters = players.filter((item) => {
         return item.team === 'red' && item.role === 'spymaster'
     })
@@ -19,7 +24,7 @@ function Footer() {
     return (
         <View style={styles.footerContainer}>
             <View style={styles.redContainer}>
-                <Text style={styles.scoreHeading}>Words left : 9</Text>
+                <Text style={styles.scoreHeading}>Words left : {redWords}</Text>
                 <Text style={[styles.scoreText, { color: '#e65831' }]}>Operative(s)</Text>
                 <View style={styles.roleContainer}>
                     {/* Red operative */}
@@ -35,7 +40,7 @@ function Footer() {
                 <Text style={styles.scoreHeading}>Game Log</Text>
             </View>
             <View style={styles.blueContainer}>
-                <Text style={styles.scoreHeading}>Words left : 8</Text>
+                <Text style={styles.scoreHeading}>Words left : {blueWords}</Text>
                 <Text style={[styles.scoreText, { color: '#7bcae9' }]}>Operative(s)</Text>
                 <View style={styles.roleContainer}>
                     {/* Blue operative */}

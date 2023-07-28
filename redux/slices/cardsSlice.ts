@@ -1,17 +1,28 @@
 import { createSlice } from "@reduxjs/toolkit";
-import generateCardData from "../../utils/cardDataGenerator";
 
-const initialCardData = generateCardData()
+type CardData = {
+    isOpen: boolean,
+    word:string,
+    color:string
+}
+
+const initialCardData: CardData[] = [];
+
+
+
 const cardsSlice = createSlice({
     name:"Cards",
     initialState: initialCardData,
     reducers:{
+        setCards: (state, action) => {
+            return action.payload;
+        },
         flipCard: (state, action) => {
             state[action.payload].isOpen = true;
         }
     }
 })
 
-export const {flipCard} = cardsSlice.actions;
+export const {flipCard,setCards} = cardsSlice.actions;
 
 export default cardsSlice.reducer;

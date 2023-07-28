@@ -1,7 +1,8 @@
 import { Text, View, StyleSheet } from 'react-native'
-
+import { useSelector } from 'react-redux'
+import { RootState } from '../redux/store'
 function GameStatus() {
-    const statusText = ''
+    const statusText = useSelector((state: RootState) => state.teamData.status)
     return (
         <View style={styles.statusContainer}>
             <Text style={styles.statusText}>{statusText}</Text>
