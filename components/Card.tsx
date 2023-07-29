@@ -1,12 +1,14 @@
-import { View,TouchableHighlight,Text,ImageBackground,StyleSheet} from "react-native"
+import { View, TouchableHighlight, Text, ImageBackground, StyleSheet, GestureResponderEvent } from "react-native"
+import { useState } from "react"
+
+const Card = function ({ item }: { item: { word: string, color: string, isOpen: boolean, isClicked: boolean } }, role: string, handleClick: () => void, handleLongPress: () => void) {
+
+    // black : bottom -200 #212121
+    // blue : bottom -100 #3a8aa6
+    // red : top -100 #d35a2b
+    // yellow : top 0 #eed5b2
 
 
-const Card = ({ item }: { item: { word: string, color: string, isOpen: boolean } }, role: string) => {
-
-// black : bottom -200 #212121
-// blue : bottom -100 #3a8aa6
-// red : top -100 #d35a2b
-// yellow : top 0 #eed5b2
 
     const getCardColor = () => {
         if (role != 'spymaster' && !item.isOpen) {
@@ -56,16 +58,17 @@ const Card = ({ item }: { item: { word: string, color: string, isOpen: boolean }
     const cardBgColor = getCardBgColor();
     const cardColor = getCardColor();
     const textColor = getTextColors();
+
+
     return (
-        <View style={[styles.card, cardBgColor]}>
-            <TouchableHighlight onPress={() => { }} style={[{ flex: 1 }, cardBgColor]}>
-                <ImageBackground source={{ uri: 'https://cdn.codenames.game/v20210210/theme/classic/card/fronts.png' }} resizeMode='cover' imageStyle={[styles.imageStyle, cardColor]} style={styles.image}>
-                    <Text style={[styles.cardText, textColor]}>
-                        {item.word}
-                    </Text>
-                </ImageBackground>
-            </TouchableHighlight>
-        </View>
+        <TouchableHighlight  onLongPress={() => handleLongPress()} onPress={() => { handleClick() }} style={[styles.card, cardBgColor]}>
+            <ImageBackground source={{ uri: 'https://cdn.codenames.game/v20210210/theme/classic/card/fronts.png' }} resizeMode='cover' imageStyle={[styles.imageStyle, cardColor]} style={styles.image}>
+                <Text style={[styles.cardText, textColor]}>
+                    {item.word}
+                </Text>
+                <Text>{item.isClicked ? '👆' : ''}</Text>
+            </ImageBackground>
+        </TouchableHighlight>
     )
 }
 
