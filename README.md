@@ -2,6 +2,8 @@
 
 Codenames is a mobile application built with React Native CLI that brings the popular board game "Codenames" to your smartphone. Enjoy the game with your friends and family anytime, anywhere.
 
+[![wakatime](https://wakatime.com/badge/github/firtysh/codenames.svg)](https://wakatime.com/badge/github/firtysh/codenames)
+
 ## Features
 
 - Create and join game rooms to play with friends.
